@@ -1,3 +1,9 @@
+<?php
+// Start the session to display any error messages
+session_start();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
