@@ -7,7 +7,7 @@ $sql = "SELECT id, name, description
         FROM recipes
         WHERE approval = TRUE
         ORDER BY approval_date DESC
-        LIMIT 3";  // Limit to 3 latest recipes
+        LIMIT 4";  // Limit to 3 latest recipes
 
 $result = $conn->query($sql);
 $latestRecipes = [];
