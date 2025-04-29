@@ -1,6 +1,12 @@
 <?php
 // Start the session to display any error messages
 session_start();
+
+if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit; // Make sure the script stops after redirecting
+}
 ?>
 
 
@@ -16,6 +22,9 @@ session_start();
 
     <header class="bg-orange-500 text-white text-center py-8">
         <h1 class="text-4xl font-bold">InstaMeal</h1>
+        <button onclick="window.location.href='logout.php';" class="absolute top-5 right-5 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 focus:outline-none z-10">
+            Logout
+        </button>
         <p class="text-lg mt-2">Find recipes with the ingredients you have!</p>
     </header>
 
@@ -32,7 +41,7 @@ session_start();
     <!-- Latest Recipes Section -->
     <section class="mt-12 flex-grow">
         <h2 id="section-title" class="text-2xl font-semibold text-center mb-8">Latest Approved Recipes</h2>
-        <div class="max-w-3/5 flex flex-wrap justify-center gap-6" id="recipes-list">
+        <div id="recipes-list" class="max-w-3/5 flex flex-wrap justify-center gap-6" >
             <!-- Recipe cards will be inserted here by JavaScript -->
         </div>
     </section>
