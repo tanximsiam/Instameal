@@ -1,6 +1,12 @@
 <?php
 // Start the session and include the database connection
 session_start();
+if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit; // Make sure the script stops after redirecting
+}
+
 include('db.connect.php'); // Make sure your database connection is correct
 
 // Fetch all recipes from the database
