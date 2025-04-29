@@ -23,6 +23,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
+        $_SESSION['is_authenticated'] = true;
 
         // Redirect to home.php after successful login
         header("Location: home.php");

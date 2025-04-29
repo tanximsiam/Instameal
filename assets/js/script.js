@@ -24,6 +24,9 @@ function fetchLatestRecipes() {
 
 function displayRecipes(recipes) {
     const recipesList = document.getElementById('recipes-list');
+    if (!recipesList) {
+        return;  // Exit the function if the element doesn't exist
+    }
     recipesList.innerHTML = '';  // Clear the list before appending new recipes
 
     // Set the parent container to grid layout for equal height cards, with gap and padding
@@ -70,7 +73,6 @@ function displayRecipes(recipes) {
         recipesList.appendChild(recipeCard);
     });
 }
-
 
 
 // Function to update recipes section by sending data to PHP-rendered page
