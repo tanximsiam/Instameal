@@ -15,7 +15,7 @@ $cuisine = mysqli_real_escape_string($conn, $_POST['cuisine']);
 $description = mysqli_real_escape_string($conn, $_POST['description']);
 
 // Check if the user is an admin or general user
-if ($_SESSION['role'] === 'admin') {
+if ($_SESSION['phprole'] === 'admin') {
     // Admin: Approve the recipe and set the current date
     $approval = true;
     $approval_date = date('Y-m-d'); // Set the current date (YYYY-MM-DD)

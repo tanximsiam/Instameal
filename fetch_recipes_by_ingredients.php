@@ -20,14 +20,15 @@ $ingredientsArray = array_map('trim', $ingredientsArray);  // Remove any extra s
 // Create placeholders for the prepared statement (one for each ingredient)
 $placeholders = implode(',', array_fill(0, count($ingredientsArray), '?'));
 
-
-// SQL Query: Use the user-provided ingredients dynamically
+// SQL Query: Use the user-provided ingredients dynamically and calculate total calories
 $sql = "
-    SELECT r.id, r.name, r.description
+    SELECT r.id, r.name, r.description, 
+    SUM(ri.quantity * i.calories) AS total_calories
     FROM recipes r
     JOIN recipe_ingredients ri ON r.id = ri.recipe_id
     JOIN ingredients i ON ri.ingredient_id = i.id
     WHERE r.approval = TRUE
+    AND LOWER(i.name) IN ('" . implode("','", array_map('strtolower', $ingredientsArray)) . "')
     GROUP BY r.id, r.name, r.description
     HAVING COUNT(DISTINCT i.id) = " . count($ingredientsArray) . " 
     AND NOT EXISTS (
@@ -35,27 +36,15 @@ $sql = "
         FROM recipe_ingredients ri2
         JOIN ingredients i2 ON ri2.ingredient_id = i2.id
         WHERE ri2.recipe_id = r.id
-        AND LOWER(i2.name) NOT IN ('" . implode("','", array_map('strtolower', $ingredientsArray)) . "') 
+        AND LOWER(i2.name) NOT IN ('" . implode("','", array_map('strtolower', $ingredientsArray)) . "')
     )
 ";
-
 
 // Prepare the statement
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die('MySQL prepare error: ' . $conn->error);  // Error handling
 }
-
-// // Bind the parameters for each ingredient search term and the count of ingredients
-// $params = [];
-// foreach ($ingredientsArray as $ingredient) {
-//     $params[] = strtolower($ingredient);  // Convert each ingredient to lowercase for case-insensitive matching
-// }
-// $params[] = count($ingredientsArray);  // We are matching the exact number of ingredients
-
-// // Bind the parameters dynamically
-// $typeStr = str_repeat('s', count($ingredientsArray)) . 'i';
-// $stmt->bind_param($typeStr, ...$params);
 
 // Execute the query
 if (!$stmt->execute()) {

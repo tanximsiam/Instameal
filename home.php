@@ -27,16 +27,33 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
         </button>
         <p class="text-lg mt-2">Find recipes with the ingredients you have!</p>
     </header>
-
+    
     <!-- Search Bar Section -->
-    <section id="search-recipes-section" class="mt-12 flex justify-center gap-4">
-        <input type="text" id="ingredients-input" placeholder="Enter ingredients (e.g. chicken, tomato)"
-            class="w-1/2 p-3 border-2 border-orange-500 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500">
-        
-        <button onclick="searchRecipes()" class="bg-orange-500 text-white p-3 rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            Search
-        </button>
+    <section id="search-recipes-section" class="w-1/2 mt-12 flex flex-wrap self-center gap-4 relative">
+        <div class="relative w-full">
+            <!-- Ingredient input field -->
+            <input type="text" id="ingredients-input" placeholder="Enter ingredients (e.g. chicken, tomato)"
+                class="w-full self-center p-3 border-2 border-orange-500 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500">
+
+            <!-- Suggestions box (hidden initially) -->
+            <div id="suggestions-box" class="absolute top-full left-0 w-full mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto z-10 hidden">
+            </div>
+        </div>
+
+        <!-- Your Ingredients Section (Initially Hidden) -->
+        <div id="selected-ingredients-section" class="w-full flex flex-row mt-4 gap-4 content-start hidden">
+            <div class="grow">
+                <p id="selected-ingredients-text" class="font-semibold">Your ingredients: </p>
+                <div id="selected-ingredients" class="flex flex-wrap gap-4 mt-2 self-start"></div> <!-- Will hold selected ingredient tags -->
+            </div>
+            <!-- Search Recipes Button (Initially Disabled) -->
+            <button id="search-button" onclick="searchRecipes()" class="ml-auto h-12 w-48 bg-orange-500 text-white p-3 rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 items-center">
+                Search Recipes
+            </button>
+        </div>
     </section>
+
+        
 
     <!-- Latest Recipes Section -->
     <section class="mt-12 flex-grow">

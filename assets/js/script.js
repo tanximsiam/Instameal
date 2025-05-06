@@ -51,23 +51,23 @@ function displayRecipes(recipes) {
         // Create the recipe name element
         const recipeName = document.createElement('h3');
         recipeName.textContent = recipe.name;  // Set the text of the recipe name
-        recipeName.classList.add('text-xl', 'font-semibold', 'text-gray-800', 'mb-2');  // Styling for name
+        recipeName.classList.add('text-xl', 'font-bold', 'text-gray-800', 'mb-2');  // Styling for name
 
         // Create the recipe description element
         const recipeDescription = document.createElement('p');
         recipeDescription.textContent = recipe.description;  // Set the text of the recipe description
-        recipeDescription.classList.add('text-gray-600', 'mb-2');  // Styling for description
+        recipeDescription.classList.add('text-gray-600', 'mb-2', 'h-full');  // Styling for description
 
-        // Create the view recipe link
-        const viewRecipeLink = document.createElement('a');
-        viewRecipeLink.textContent = 'View Recipe';
-        viewRecipeLink.href = `recipe_detail.php?id=${recipe.id}`;  // Set the link URL
-        viewRecipeLink.classList.add('text-orange-500', 'hover:underline', 'mt-auto');  // Styling for link with margin to push to the bottom
+        // Create the recipe calorie count element
+        const recipeCalories = document.createElement('p');
+        const totalCalories = Math.floor(recipe.total_calories);  // Ensure calories are displayed as an integer
+        recipeCalories.textContent = `Total Calories: ${totalCalories}`;  // Set the calorie text
+        recipeCalories.classList.add('text-orange-600', 'font-semibold', 'mb-2', 'text-center');  // Center aligned text
 
         // Append all created elements to the recipe card
         recipeCard.appendChild(recipeName);
         recipeCard.appendChild(recipeDescription);
-        recipeCard.appendChild(viewRecipeLink);
+        recipeCard.appendChild(recipeCalories);  // Append the calorie part here
 
         // Append the recipe card to the main list of recipes
         recipesList.appendChild(recipeCard);
@@ -82,6 +82,7 @@ function updateRecipesSection(recipes) {
     console.log('Recipes data to be sent:', recipes);
 }
 
+
 // Function to clear the recipes section (in case of no results)
 function clearRecipes() {
     const recipesList = document.getElementById('recipes-list');
@@ -90,99 +91,213 @@ function clearRecipes() {
 
 
 // Function to fetch and display the recipes based on the search input
-function searchRecipes() {
-    const searchTerm = document.getElementById('ingredients-input').value.trim();
+// function searchRecipes() {
+//     const searchTerm = document.getElementById('ingredients-input').value.trim();
 
-    if (searchTerm === "") {
-        alert("Please enter ingredients to search!");
+//     if (searchTerm === "") {
+//         alert("Please enter ingredients to search!");
+//         return;
+//     }
+
+//     // Prepare the data to be sent in the POST request
+//     const requestData = {
+//         ingredients: searchTerm // Send the ingredients string entered by the user
+//     };
+
+//     // Fetch the matching recipes based on the ingredients
+//     fetch('fetch_recipes_by_ingredients.php', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(requestData)  // Send the search term to PHP as JSON
+//     })
+//     .then(response => {
+//         // Check if the response is OK (status 200)
+//         if (!response.ok) {
+//             throw new Error("Network response was not ok " + response.statusText);
+//         }
+//         // Log the response text for debugging
+//         return response.text().then(text => {
+//             console.log("Response received: ", text);  // Log the raw response
+//             return JSON.parse(text);  // Try to parse it as JSON
+//         });
+//     })
+//     .then(data => {
+//         if (data.length > 0) {
+//             displayMatchingRecipes(data);  // Display matching recipes if found
+//         } else {
+//             alert("No recipes found for the given ingredients.");
+//             fetchLatestRecipes();  // If no recipes found, show the latest approved recipes
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error fetching recipes:', error);
+//         alert("Something went wrong. Please try again later.");
+//     });
+// }
+
+
+// Function to replace the "Latest Approved Recipes" section with matching recipes
+function displayMatchingRecipes(recipes) {
+    // Update the section title
+    const sectionTitle = document.getElementById('section-title');
+    sectionTitle.innerHTML = 'Matching Recipes';
+
+    // Call the displayRecipes function to handle rendering the recipes
+    displayRecipes(recipes);  // Assuming displayRecipes is the function that handles recipe card generation
+}
+
+
+// Array to track selected ingredients
+let selectedIngredients = [];
+
+
+// Function to fetch and display ingredient suggestions as the user types
+function fetchIngredientSuggestions(query) {
+    if (query.trim() === "") {
+        document.getElementById('suggestions-box').classList.add('hidden');
         return;
     }
 
-    // Prepare the data to be sent in the POST request
-    const requestData = {
-        ingredients: searchTerm // Send the ingredients string entered by the user
+    // Send an AJAX request to fetch ingredients suggestions from the database
+    fetch('fetch_ingredients_suggestions.php?search=' + encodeURIComponent(query))
+        .then(response => response.json())
+        .then(suggestions => {
+            // Filter out ingredients already selected
+            const filteredSuggestions = suggestions.filter(suggestion => !selectedIngredients.includes(suggestion));
+            displayIngredientSuggestions(filteredSuggestions); // Display filtered suggestions
+        })
+        .catch(error => {
+            console.error('Error fetching ingredient suggestions:', error);
+        });
+}
+
+
+// Function to display ingredient suggestions below the input field
+function displayIngredientSuggestions(suggestions) {
+    const suggestionBox = document.getElementById('suggestions-box');
+    suggestionBox.innerHTML = '';  // Clear previous suggestions
+
+    if (suggestions.length > 0) {
+        suggestionBox.classList.remove('hidden');  // Show suggestions box
+        suggestions.forEach(suggestion => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.classList.add('suggestion-item', 'p-2', 'cursor-pointer', 'hover:bg-gray-200');
+            suggestionItem.textContent = suggestion;
+            suggestionItem.onclick = () => {
+                addIngredientToSelected(suggestion);  // Add suggestion to selected ingredients
+                suggestionBox.classList.add('hidden');  // Hide suggestions after selection
+                
+                // Clear the input field
+                document.getElementById('ingredients-input').value = '';  // Clear the input field
+            };
+            suggestionBox.appendChild(suggestionItem);
+        });
+    } else {
+        suggestionBox.classList.add('hidden');  // Hide suggestions box if no suggestions
+    }
+}
+
+
+// Function to add an ingredient tag to the "Your Ingredients" section
+function addIngredientToSelected(ingredient) {
+    const selectedIngredientsDiv = document.getElementById('selected-ingredients');
+    const selectedIngredientsSection = document.getElementById('selected-ingredients-section');
+    
+    // Add ingredient to the selected ingredients array
+    selectedIngredients.push(ingredient);
+
+    // Create a new tag (chip) for the selected ingredient
+    const ingredientTag = document.createElement('div');
+    ingredientTag.classList.add('ingredient-chip','bg-gray-200', 'rounded-full', 'px-3', 'py-1', 'flex', 'items-center', 'justify-between');
+    ingredientTag.textContent = ingredient;
+
+    // Create the remove button for the tag
+    const removeBtn = document.createElement('span');
+    removeBtn.textContent = '×';
+    removeBtn.classList.add('remove-btn');
+    removeBtn.onclick = () => {
+        ingredientTag.remove();  // Remove the ingredient chip
+        selectedIngredients = selectedIngredients.filter(item => item !== ingredient);  // Remove ingredient from the array
+        checkIfIngredientsAreEmpty(); // Check if the section should be hidden
     };
 
-    // Fetch the matching recipes based on the ingredients
+    // Append the remove button and tag to the container
+    ingredientTag.appendChild(removeBtn);
+    selectedIngredientsDiv.appendChild(ingredientTag);
+
+    // Show the "Your Ingredients" section if an ingredient is added
+    selectedIngredientsSection.classList.remove('hidden');
+}
+
+
+// Function to check if the "Your Ingredients" section should be hidden
+function checkIfIngredientsAreEmpty() {
+    const selectedIngredientsDiv = document.getElementById('selected-ingredients');
+    const selectedIngredientsSection = document.getElementById('selected-ingredients-section');
+
+    // If there are no ingredients left, hide the "Your Ingredients" section
+    if (selectedIngredientsDiv.children.length === 0) {
+        selectedIngredientsSection.classList.add('hidden');
+    }
+}
+
+
+// Function to trigger the search based on selected ingredients
+function searchRecipes() {
+    const selectedIngredientsDiv = document.getElementById('selected-ingredients');
+    const ingredientsArray = [];
+
+    // Get all ingredient names from the selected chips
+    Array.from(selectedIngredientsDiv.children).forEach(tag => {
+        ingredientsArray.push(tag.textContent.replace('×', '').trim());  // Remove the '×' (remove button)
+    });
+
+    // Prepare the data to be sent in the POST request
+    const requestData = {
+        ingredients: ingredientsArray.join(', ')  // Send the selected ingredients as a string
+    };
+
+    // Fetch the matching recipes based on the selected ingredients
     fetch('fetch_recipes_by_ingredients.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestData)  // Send the search term to PHP as JSON
+        body: JSON.stringify(requestData)  // Send the selected ingredients to PHP as JSON
     })
     .then(response => {
-        // Check if the response is OK (status 200)
         if (!response.ok) {
             throw new Error("Network response was not ok " + response.statusText);
         }
-        // Log the response text for debugging
-        return response.text().then(text => {
-            console.log("Response received: ", text);  // Log the raw response
-            return JSON.parse(text);  // Try to parse it as JSON
-        });
+        return response.json();  // Parse the response as JSON
     })
     .then(data => {
         if (data.length > 0) {
             displayMatchingRecipes(data);  // Display matching recipes if found
         } else {
-            alert("No recipes found for the given ingredients.");
-            displayLatestRecipes();  // If no recipes found, show the latest approved recipes
+            alert("No recipes found for the selected ingredients.");
+            document.getElementById('selected-ingredients-section').classList.add('hidden');  // Hide section if no results
         }
+        // After the search is completed, clear the previous chips (selected ingredients)
+        selectedIngredientsDiv.innerHTML = '';  // Clear the ingredient chips
+        selectedIngredients = [];  // Clear the selectedIngredients array
+        document.getElementById('selected-ingredients-section').classList.add('hidden');
     })
     .catch(error => {
         console.error('Error fetching recipes:', error);
         alert("Something went wrong. Please try again later.");
-    });
-}
-
-// Function to replace the "Latest Approved Recipes" section with matching recipes
-function displayMatchingRecipes(recipes) {
-    const recipesSection = document.getElementById('recipes-list');
-    recipesSection.innerHTML = '';  // Clear previous recipes
-
-    const sectionTitle = document.getElementById('section-title');
-    sectionTitle.innerHTML = 'Matching Recipes';
-
-    // const sectionTitle = document.createElement('h2');
-    // sectionTitle.textContent = "Matching Recipes";
-    // sectionTitle.classList.add('text-2xl', 'font-semibold', 'text-center', 'mb-8');
-    // recipesSection.appendChild(sectionTitle);
-
-    // Loop through the recipes and display them
-    recipes.forEach(recipe => {
-        const recipeCard = document.createElement('div');
-        recipeCard.classList.add(
-            'bg-white', 'p-6', 'rounded-2xl', 'shadow', 
-            'text-center', 'border', 'border-gray-300', 'flex', 'flex-col', 
-            'h-full', 'w-full', 'm-2' // Ensure the card uses full width of the grid)
-        );
-        const recipeName = document.createElement('h3');
-        recipeName.textContent = recipe.name;
-        recipeName.classList.add('text-xl', 'font-semibold', 'text-gray-800', 'mb-2');
-
-        const recipeDescription = document.createElement('p');
-        recipeDescription.textContent = recipe.description;
-        recipeDescription.classList.add('text-gray-600', 'mb-4');
-
-        const viewRecipeLink = document.createElement('a');
-        viewRecipeLink.textContent = 'View Recipe';
-        viewRecipeLink.href = `recipe_detail.php?id=${recipe.id}`;
-        viewRecipeLink.classList.add('text-orange-500', 'hover:underline', 'mt-auto');
-
-        recipeCard.appendChild(recipeName);
-        recipeCard.appendChild(recipeDescription);
-        recipeCard.appendChild(viewRecipeLink);
-        recipesSection.appendChild(recipeCard);
+        document.getElementById('selected-ingredients-section').classList.add('hidden');  // Hide section on error
     });
 }
 
 
-// Function to display the latest recipes when no search results are found
-function displayLatestRecipes() {
-    // Call the function to fetch and display the latest approved recipes again
-    fetchLatestRecipes();
-}
+// Attach the fetchIngredientSuggestions to the ingredients input field
+document.getElementById('ingredients-input').addEventListener('input', function() {
+    fetchIngredientSuggestions(this.value);
+});
+
 
 // When the page loads, display the latest recipes
 document.addEventListener('DOMContentLoaded', fetchLatestRecipes);
