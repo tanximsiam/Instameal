@@ -9,7 +9,6 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,9 +21,17 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
 
     <header class="bg-orange-500 text-white text-center py-8">
         <h1 class="text-4xl font-bold">InstaMeal</h1>
-        <button onclick="window.location.href='logout.php';" class="absolute top-5 right-5 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 focus:outline-none z-10">
+        <button onclick="window.location.href='logout.php';" class="absolute top-5 right-5 bg-red-500 text-black p-2 rounded-lg hover:bg-white focus:outline-none z-10">
             Logout
-        </button>
+            </button>
+        <button onclick="window.location.href='view_recipes.php';" class="absolute top-5 left-5 bg-red-500 text-black p-2 rounded-lg hover:bg-white focus:outline-none z-10">
+            View Recipes
+            </button>
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'):  ?>
+            <button onclick="window.location.href='admin_panel.php';" class="absolute top-16 right-5 bg-red-500 text-white p-2 rounded-lg hover:bg-black focus:outline-none z-10">
+                Admin Panel
+            </button>
+        <?php endif; ?>
         <p class="text-lg mt-2">Find recipes with the ingredients you have!</p>
     </header>
     
@@ -54,7 +61,6 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
     </section>
 
         
-
     <!-- Latest Recipes Section -->
     <section class="mt-12 flex-grow">
         <h2 id="section-title" class="text-2xl font-semibold text-center mb-8">Latest Approved Recipes</h2>

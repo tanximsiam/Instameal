@@ -40,6 +40,9 @@ $is_logged_in = isset($_SESSION['user_role']);
 
     <header class="bg-orange-500 text-white text-center py-8">
         <h1 class="text-4xl font-bold">InstaMeal</h1>
+        <button onclick="window.location.href='home.php';" class="absolute top-5 left-5 bg-red-500 text-white p-2 rounded-lg hover:bg-black focus:outline-none z-10">
+        Back to Home
+        </button>
         <p class="text-lg mt-2">Browse through our latest recipes!</p>
     </header>
 
