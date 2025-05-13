@@ -64,7 +64,14 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
     <!-- Latest Recipes Section -->
     <section class="mt-12 flex-grow">
         <h2 id="section-title" class="text-2xl font-semibold text-center mb-8">Latest Approved Recipes</h2>
-        <div id="recipes-list" class="max-w-3/5 flex flex-wrap justify-center gap-6" >
+        <div id="matching-recipes-list" class="max-w-3/5 flex flex-wrap justify-center gap-6" >
+            <!-- Recipe cards will be inserted here by JavaScript -->
+        </div>
+    </section>
+
+    <section class="mt-12 flex-grow">
+        <h2 id="suggested-section-title" class="text-2xl font-semibold text-center mb-8"></h2>
+        <div id="suggested-recipes-list" class="max-w-3/5 flex flex-wrap justify-center gap-6" >
             <!-- Recipe cards will be inserted here by JavaScript -->
         </div>
     </section>
