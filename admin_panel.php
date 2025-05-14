@@ -12,10 +12,22 @@ $is_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
 // Handle approval
 if ($is_admin && isset($_GET['approve'])) {
     $recipe_id = intval($_GET['approve']);
-    $approval_date = date('Y-m-d');
-    mysqli_query($conn, "UPDATE recipes SET approval = 1, approval_date = '$approval_date' WHERE id = $recipe_id");
-    header("Location: admin_panel.php");
-    exit;
+
+    // Check if recipe ID exists in the recipe_ingredients table
+    $check_query = "SELECT recipe_id FROM recipe_ingredients WHERE recipe_id = $recipe_id LIMIT 1";
+    $check_result = mysqli_query($conn, $check_query);
+
+    // If recipe ID does not exist in the recipe_ingredients table
+    if (mysqli_num_rows($check_result) === 0) {
+        // Display error message (can be shown on the page or a redirect with a query parameter)
+        echo "<script>alert('Unmapped recipe cannot be approved. Map ingredients first.');</script>";
+    } else {
+        // If mapped, proceed with the approval
+        $approval_date = date('Y-m-d');
+        mysqli_query($conn, "UPDATE recipes SET approval = 1, approval_date = '$approval_date' WHERE id = $recipe_id");
+        header("Location: admin_panel.php");
+        exit;
+    }
 }
 
 // Handle removal
@@ -55,11 +67,21 @@ $editing_id = isset($_GET['edit']) ? intval($_GET['edit']) : null;
 
 <header class="bg-orange-500 text-white text-center py-6">
     <h1 class="text-3xl font-bold">InstaMeal Admin Panel</h1>
-    <button onclick="window.location.href='home.php';" class="absolute top-5 left-5 bg-red-500 text-white p-2 rounded-lg hover:bg-black focus:outline-none z-10">
-        Back to Home
-        </button>
     <p class="mt-1 text-lg">Manage Recipes</p>
 </header>
+<nav class="bg-orange-400 text-white py-4">
+        <ul class="flex justify-center space-x-8">
+            <li><a href="home.php" class="hover:text-black">Home</a></li>
+            <li><a href="view_recipes.php" class="hover:text-black">View Recipes</a></li>
+            <li><a href="view_ingredients.php" class="hover:text-black">View Ingredients</a></li>
+
+            <!-- Show admin-only links if the user is an admin -->
+            <?php if ($is_admin): ?>
+                <li><a href="recipe_maps.php" class="hover:text-black">Recipe Maps</a></li>
+                <li><a href="admin_panel.php" class="hover:text-black">Admin Panel</a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
 
 <main class="container mx-auto px-4 py-8">
 <?php if ($is_admin): ?>

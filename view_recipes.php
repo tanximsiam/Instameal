@@ -6,6 +6,8 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
     header("Location: index.php");
     exit; // Make sure the script stops after redirecting
 }
+$is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; // Check if the user is an admin
+
 
 include('db.connect.php'); // Make sure your database connection is correct
 
@@ -40,11 +42,22 @@ $is_logged_in = isset($_SESSION['user_role']);
 
     <header class="bg-orange-500 text-white text-center py-8">
         <h1 class="text-4xl font-bold">InstaMeal</h1>
-        <button onclick="window.location.href='home.php';" class="absolute top-5 left-5 bg-red-500 text-white p-2 rounded-lg hover:bg-black focus:outline-none z-10">
-        Back to Home
-        </button>
         <p class="text-lg mt-2">Browse through our latest recipes!</p>
     </header>
+    <nav class="bg-orange-400 text-white py-4">
+        <ul class="flex justify-center space-x-8">
+            <li><a href="home.php" class="hover:text-black">Home</a></li>
+            <li><a href="view_recipes.php" class="hover:text-black">View Recipes</a></li>
+            <li><a href="view_ingredients.php" class="hover:text-black">View Ingredients</a></li>
+
+            <!-- Show admin-only links if the user is an admin -->
+            <?php if ($is_admin): ?>
+                <li><a href="recipe_maps.php" class="hover:text-black">Recipe Maps</a></li>
+                <li><a href="admin_panel.php" class="hover:text-black">Admin Panel</a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+    
 
     <!-- View All Recipes Section -->
     <section id="view-all-recipes-section" class="mt-12 flex flex-col items-center gap-8">

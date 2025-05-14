@@ -405,11 +405,68 @@ function searchRecipes() {
 }
 
 
+// Function to fetch recipe suggestions as the user types
+function fetchRecipeSuggestions(query) {
+    if (query.trim() === "") {
+        document.getElementById('recipe-suggestions-box').classList.add('hidden');
+        return;
+    }
+
+    // Send an AJAX request to fetch recipe suggestions from the database
+    fetch('fetch_recipe_suggestions.php?search=' + encodeURIComponent(query))
+        .then(response => response.json())
+        .then(suggestions => {
+            // Display the recipe suggestions
+            displayRecipeSuggestions(suggestions);
+        })
+        .catch(error => {
+            console.error('Error fetching recipe suggestions:', error);
+        });
+}
+
+// Function to display recipe suggestions below the input field
+function displayRecipeSuggestions(suggestions) {
+    const suggestionBox = document.getElementById('recipe-suggestions-box');
+    suggestionBox.innerHTML = '';  // Clear previous suggestions
+
+    if (suggestions.length > 0) {
+        suggestionBox.classList.remove('hidden');  // Show suggestions box
+
+        suggestions.forEach(suggestion => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.classList.add('suggestion-item', 'p-2', 'cursor-pointer', 'hover:bg-gray-200');
+            suggestionItem.textContent = suggestion;  // Display recipe name
+            suggestionItem.onclick = () => {
+                // When a suggestion is clicked, fill the input field with the recipe name
+                document.getElementById('recipe-input').value = suggestion;
+                suggestionBox.classList.add('hidden');  // Hide suggestions after selection
+            };
+            suggestionBox.appendChild(suggestionItem);
+        });
+    } else {
+        suggestionBox.classList.add('hidden');  // Hide suggestions box if no suggestions
+    }
+}
+
+// Attach the fetchRecipeSuggestions to the recipe input field
+const recipeInput = document.getElementById('recipe-input');
+if (recipeInput) {  // Check if the element exists
+    recipeInput.addEventListener('input', function() {
+        fetchRecipeSuggestions(this.value);
+    });
+} else {
+    console.warn('Element with id "recipe-input" not found');
+}
 
 // Attach the fetchIngredientSuggestions to the ingredients input field
-document.getElementById('ingredients-input').addEventListener('input', function() {
-    fetchIngredientSuggestions(this.value);
-});
+const ingredientsInput = document.getElementById('ingredients-input');
+if (ingredientsInput) {  // Check if the element exists
+    ingredientsInput.addEventListener('input', function() {
+        fetchIngredientSuggestions(this.value);
+    });
+} else {
+    console.warn('Element with id "ingredients-input" not found');
+}
 
 
 // When the page loads, display the latest recipes

@@ -7,7 +7,10 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
     header("Location: index.php");
     exit; // Make sure the script stops after redirecting
 }
+
+$is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; // Check if the user is an admin
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,16 +27,23 @@ if (!isset($_SESSION['is_authenticated']) || $_SESSION['is_authenticated'] !== t
         <button onclick="window.location.href='logout.php';" class="absolute top-5 right-5 bg-red-500 text-black p-2 rounded-lg hover:bg-white focus:outline-none z-10">
             Logout
             </button>
-        <button onclick="window.location.href='view_recipes.php';" class="absolute top-5 left-5 bg-red-500 text-black p-2 rounded-lg hover:bg-white focus:outline-none z-10">
-            View Recipes
-            </button>
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'):  ?>
-            <button onclick="window.location.href='admin_panel.php';" class="absolute top-16 right-5 bg-red-500 text-white p-2 rounded-lg hover:bg-black focus:outline-none z-10">
-                Admin Panel
-            </button>
-        <?php endif; ?>
         <p class="text-lg mt-2">Find recipes with the ingredients you have!</p>
+
+        <!-- Navbar Section -->
     </header>
+    <nav class="bg-orange-400 text-white py-4">
+        <ul class="flex justify-center space-x-8">
+            <li><a href="home.php" class="hover:text-black">Home</a></li>
+            <li><a href="view_recipes.php" class="hover:text-black">View Recipes</a></li>
+            <li><a href="view_ingredients.php" class="hover:text-black">View Ingredients</a></li>
+
+            <!-- Show admin-only links if the user is an admin -->
+            <?php if ($is_admin): ?>
+                <li><a href="recipe_maps.php" class="hover:text-black">Recipe Maps</a></li>
+                <li><a href="admin_panel.php" class="hover:text-black">Admin Panel</a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
     
     <!-- Search Bar Section -->
     <section id="search-recipes-section" class="w-1/2 mt-12 flex flex-wrap self-center gap-4 relative">
