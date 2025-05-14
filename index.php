@@ -34,7 +34,13 @@ session_start();
 
             <!-- Login Button (Submit) -->
             <button type="submit" class="w-full py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none transition duration-200 ease-in-out">Login</button>
+            
         </form>
+        <!-- New Here Button -->
+        <div class="text-center mt-4">
+            <a href="register.php" class="text-blue-500 hover:text-blue-700">New here? Register</a>
+        </div>
+    </div>
     </div>
 
 </body>

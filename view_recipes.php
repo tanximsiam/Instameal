@@ -55,6 +55,7 @@ $is_logged_in = isset($_SESSION['user_role']);
                 <li><a href="recipe_maps.php" class="hover:text-black">Recipe Maps</a></li>
                 <li><a href="admin_panel.php" class="hover:text-black">Admin Panel</a></li>
             <?php endif; ?>
+            <li><a href="view_profile.php" class="hover:text-black">View Profile</a></li>
         </ul>
     </nav>
     
