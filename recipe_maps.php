@@ -89,7 +89,7 @@ if (!$result) {
     <section id="recipe-mapping-section" class="mt-12 w-full max-w-5xl mx-auto">
         <div class="flex justify-between items-center mb-4 w-full">
             <h2 class="text-2xl font-semibold">Recipe Ingredient Mappings</h2>
-            <a href="/InstaMeal/recipe_mapper.php" class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 focus:outline-none">
+            <a href="recipe_mapper.php" class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 focus:outline-none">
                 Map New
             </a>
         </div>
